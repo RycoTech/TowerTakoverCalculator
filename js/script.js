@@ -218,7 +218,6 @@ function updateScores(){
     blueScore.textContent = totalScore(blueOrangeCubes,orangeMultiplier,blueGreenCubes,greenMultiplier,bluePurpleCubes,purpleMultiplier,blueBonusPoints)
     predictAddTowers()
     predictRemoveTowers()
-    //predictScores()
 }
 
 function changeTeam(){
@@ -233,16 +232,28 @@ function changeTeam(){
 
 
 
-function outcomeCalulator(allianceScore, opponentScore, delta, outcome) {
-  if (delta.textContent === '-') {
+function outcomeCalulator(allianceScore, opponentScore, allianceDelta, opponentDelta, outcome) {
+  if (allianceDelta.textContent === '-') {
     outcome.textContent = "-"
+  } else if(allianceScore === 0 && opponentScore === 0){
+     outcome.textContent = "-"
   } else {
-    if (delta.textContent + allianceScore > opponentScore) {
-      outcome.textContent = "Win"
-    } else if(delta.textContent + allianceScore < opponentScore){
-      outcome.textContent = "Lose"
-    }else if(delta.textContent + allianceScore === opponentScore){
+
+    let deltaAllianceValue = parseInt(allianceDelta.textContent, 10)
+    let newAllianceScore = deltaAllianceValue + allianceScore
+    let newOpponentScore = opponentScore + opponentDelta
+    console.log("--")
+    console.log("Delta: " + allianceDelta)
+    console.log("New score: " + newAllianceScore)
+    console.log("New Opponent Score: " + opponentScore)
+
+
+    if (newAllianceScore === newOpponentScore) {
       outcome.textContent = "Tie"
+    } else if(newAllianceScore < newOpponentScore){
+      outcome.textContent = "Lose"
+    }else if(newAllianceScore > newOpponentScore){
+      outcome.textContent = "Win"
     }
   }
 }
@@ -265,6 +276,9 @@ function predictAddTowers() {
   let allianceOrangeCubes = 0
   let allianceGreenCubes = 0
   let alliancePurpleCubes = 0
+  let opponentOrangeCubes = 0
+  let opponentGreenCubes = 0
+  let opponentPurpleCubes = 0
 
 
   if(trackingTeam === 'red'){
@@ -273,6 +287,9 @@ function predictAddTowers() {
     allianceOrangeCubes = redOrangeCubes
     allianceGreenCubes = redGreenCubes
     alliancePurpleCubes = redPurpleCubes
+    opponentOrangeCubes = blueOrangeCubes
+    opponentGreenCubes = blueGreenCubes
+    opponentPurpleCubes = bluePurpleCubes
 
   }else if (trackingTeam === 'blue'){
     allianceScore = currentBlueScore
@@ -280,6 +297,9 @@ function predictAddTowers() {
     allianceOrangeCubes = blueOrangeCubes
     allianceGreenCubes = blueGreenCubes
     alliancePurpleCubes = bluePurpleCubes
+    apponentOrangeCubes = redOrangeCubes
+    opponentGreenCubes = redGreenCubes
+    opponentPurpleCubes = redPurpleCubes
   }
 
   const addOrangeTowerRed = document.querySelector('.tower_add_orange_red')
@@ -307,7 +327,7 @@ function predictAddTowers() {
     addOrangeTowerDelta.textContent = '-'
   }
 
-  //outcomeCalulator(allianceScore, opponentScore, addOrangeTowerDelta, addOrangeTowerOutcome)
+  outcomeCalulator(allianceScore, opponentScore, addOrangeTowerDelta, opponentOrangeCubes, addOrangeTowerOutcome)
 
   if(towerCubes < 7 && greenCubesInPlay > 0){
     addGreenTowerRed.textContent = redGreenCubes + currentRedScore
@@ -318,7 +338,7 @@ function predictAddTowers() {
     addGreenTowerBlue.textContent = '-'
     addGreenTowerDelta.textContent ='-'
   }
-  //outcomeCalulator(allianceScore, opponentScore, addGreenTowerDelta, addGreenTowerOutcome)
+  outcomeCalulator(allianceScore, opponentScore, addGreenTowerDelta, opponentGreenCubes, addGreenTowerOutcome)
 
   if(towerCubes < 7 && purpleCubesInPlay > 0){
     addPurpleTowerRed.textContent =   redPurpleCubes + currentRedScore
@@ -329,7 +349,7 @@ function predictAddTowers() {
     addPurpleTowerBlue.textContent =  '-'
     addPurpleTowerDelta.textContent = '-'
   }
-  //outcomeCalulator(allianceScore, opponentScore, addPurpleTowerDelta, addPurpleTowerOutcome)
+  outcomeCalulator(allianceScore, opponentScore, addPurpleTowerDelta, opponentPurpleCubes, addPurpleTowerOutcome)
 }
 
 function predictRemoveTowers(){
@@ -348,6 +368,9 @@ function predictRemoveTowers(){
     allianceOrangeCubes = redOrangeCubes
     allianceGreenCubes = redGreenCubes
     alliancePurpleCubes = redPurpleCubes
+    opponentOrangeCubes = blueOrangeCubes
+    opponentGreenCubes = blueGreenCubes
+    opponentPurpleCubes = bluePurpleCubes
 
   }else if (trackingTeam === 'blue'){
     allianceScore = currentBlueScore
@@ -355,6 +378,9 @@ function predictRemoveTowers(){
     allianceOrangeCubes = blueOrangeCubes
     allianceGreenCubes = blueGreenCubes
     alliancePurpleCubes = bluePurpleCubes
+    apponentOrangeCubes = redOrangeCubes
+    opponentGreenCubes = redGreenCubes
+    opponentPurpleCubes = redPurpleCubes
   }
 
   const removeOrangeTowerRed = document.querySelector('.tower_remove_orange_red')
@@ -381,7 +407,7 @@ function predictRemoveTowers(){
     removeOrangeTowerBlue.textContent = '-'
     removeOrangeTowerDelta.textContent = '-'
   }
-  //outcomeCalulator(allianceScore, opponentScore, removeOrangeTowerDelta, removeOrangeTowerOutcome)
+  outcomeCalulator(allianceScore, opponentScore, removeOrangeTowerDelta, (-opponentOrangeCubes), removeOrangeTowerOutcome)
 
   if(towerCubes > 0 && greenMultiplier > 1){
     removeGreenTowerRed.textContent = currentRedScore - redGreenCubes
@@ -392,7 +418,7 @@ function predictRemoveTowers(){
     removeGreenTowerBlue.textContent = '-'
     removeGreenTowerDelta.textContent = '-'
   }
-  //outcomeCalulator(allianceScore, opponentScore, removeGreenTowerDelta, removeGreenTowerOutcome)
+  outcomeCalulator(allianceScore, opponentScore, removeGreenTowerDelta, (-opponentGreenCubes),removeGreenTowerOutcome)
 
   if(towerCubes > 0 && purpleMultiplier > 1){
     removePurpleTowerRed.textContent = currentRedScore - redPurpleCubes
@@ -403,187 +429,5 @@ function predictRemoveTowers(){
     removePurpleTowerBlue.textContent = '-'
     removePurpleTowerDelta.textContent = '-'
   }
-  //outcomeCalulator(allianceScore, opponentScore, removePurpleTowerDelta, removePurpleTowerOutcome)
+  outcomeCalulator(allianceScore, opponentScore, removePurpleTowerDelta, (-opponentPurpleCubes),removePurpleTowerOutcome)
 }
-
-
-// function predictScores(){
-  // let currentRedScore = (redOrangeCubes*orangeMultiplier)+(redGreenCubes*greenMultiplier)+(redPurpleCubes*purpleMultiplier) + redBonusPoints
-  // let currentBlueScore = (blueOrangeCubes*orangeMultiplier)+(blueGreenCubes*greenMultiplier)+(bluePurpleCubes*purpleMultiplier) + blueBonusPoints
-  // let allianceScore = 0
-  // let opponentScore = 0
-  // let allianceOrangeCubes = 0
-  // let allianceGreenCubes = 0
-  // let alliancePurpleCubes = 0
-  //
-  //
-  // if(trackingTeam === 'red'){
-  //   allianceScore = currentRedScore
-  //   opponentScore = currentBlueScore
-  //   allianceOrangeCubes = redOrangeCubes
-  //   allianceGreenCubes = redGreenCubes
-  //   alliancePurpleCubes = redPurpleCubes
-  //
-  // }else if (trackingTeam === 'blue'){
-  //   allianceScore = currentBlueScore
-  //   opponentScore = currentRedScore
-  //   allianceOrangeCubes = blueOrangeCubes
-  //   allianceGreenCubes = blueGreenCubes
-  //   alliancePurpleCubes = bluePurpleCubes
-  // }
-//
-//    const addOrangeTowerRed = document.querySelector('.tower_add_orange_red')
-//    const addOrangeTowerBlue = document.querySelector('.tower_add_orange_blue')
-//    const addOrangeTowerDelta = document.querySelector('.tower_add_orange_delta')
-//    const addOrangeTowerOutcome = document.querySelector('.tower_add_orange_outcome')
-//
-//    const addGreenTowerRed = document.querySelector('.tower_add_green_red')
-//    const addGreenTowerBlue = document.querySelector('.tower_add_green_blue')
-//    const addGreenTowerDelta = document.querySelector('.tower_add_green_delta')
-//    const addGreenTowerOutcome = document.querySelector('.tower_add_green_outcome')
-//
-//    const addPurpleTowerRed = document.querySelector('.tower_add_purple_red')
-//    const addPurpleTowerBlue = document.querySelector('.tower_add_purple_blue')
-//    const addPurpleTowerDelta = document.querySelector('.tower_add_purple_delta')
-//    const addPurpleTowerOutcome = document.querySelector('.tower_add_purple_outcome')
-//
-   // const removeOrangeTowerRed = document.querySelector('.tower_remove_orange_red')
-   // const removeOrangeTowerBlue = document.querySelector('.tower_remove_orange_blue')
-   // const removeOrangeTowerDelta = document.querySelector('.tower_remove_orange_delta')
-   // const removeOrangeTowerOutcome = document.querySelector('.tower_remove_orange_outcome')
-   //
-   // const removeGreenTowerRed = document.querySelector('.tower_remove_green_red')
-   // const removeGreenTowerBlue = document.querySelector('.tower_remove_green_blue')
-   // const removeGreenTowerDelta = document.querySelector('.tower_remove_green_delta')
-   // const removeGreenTowerOutcome = document.querySelector('.tower_remove_green_outcome')
-   //
-   // const removePurpleTowerRed = document.querySelector('.tower_remove_purple_red')
-   // const removePurpleTowerBlue = document.querySelector('.tower_remove_purple_blue')
-   // const removePurpleTowerDelta = document.querySelector('.tower_remove_purple_delta')
-   // const removePurpleTowerOutcome = document.querySelector('.tower_remove_purple_outcome')
-//
-//    const stackOrangeRed = document.querySelector('.stack_orange_red')
-//    const stackOrangeBlue = document.querySelector('.stack_orange_blue')
-//    const stackOrangeDelta = document.querySelector('.stack_orange_delta')
-//    const stackOrangeOutcome = document.querySelector('.stack_orange_outcome')
-//
-//    const stackGreenRed = document.querySelector('.stack_green_red')
-//    const stackGreenBlue = document.querySelector('.stack_green_blue')
-//    const stackGreenDelta = document.querySelector('.stack_green_delta')
-//    const stackGreenOutcome = document.querySelector('.stack_green_outcome')
-//
-//    const stackPurpleRed = document.querySelector('.stack_purple_red')
-//    const stackPurpleBlue = document.querySelector('.stack_purple_blue')
-//    const stackPurpleDelta = document.querySelector('.stack_purple_delta')
-//    const stackPurpleOutcome = document.querySelector('.stack_purple_outcome')
-//
-//
-//
-//    if(towerCubes < 7 && orangeCubesInPlay > 0){
-//      addOrangeTowerRed.textContent =   ((redOrangeCubes*(orangeMultiplier+1))-(redOrangeCubes*orangeMultiplier)) + currentRedScore
-//      addOrangeTowerBlue.textContent =  (blueOrangeCubes*(orangeMultiplier+1) - blueOrangeCubes*(orangeMultiplier)) + currentBlueScore
-//      addOrangeTowerDelta.textContent = (allianceOrangeCubes*(orangeMultiplier+1)) - (allianceOrangeCubes*orangeMultiplier)
-//    }else{
-//      addOrangeTowerRed.textContent =  '-'
-//      addOrangeTowerBlue.textContent =  '-'
-//      addOrangeTowerDelta.textContent = '-'
-//    }
-//
-//    outcomeCalulator(allianceScore, opponentScore, addOrangeTowerDelta, addOrangeTowerOutcome)
-//
-//    if(towerCubes < 7 && greenCubesInPlay > 0){
-//      addGreenTowerRed.textContent = (redOrangeCubes*(orangeMultiplier))+(redGreenCubes*(greenMultiplier+1))+(redPurpleCubes*purpleMultiplier) + redBonusPoints
-//      addGreenTowerBlue.textContent = (blueOrangeCubes*(orangeMultiplier))+(blueGreenCubes*(greenMultiplier+1))+(bluePurpleCubes*purpleMultiplier) + blueBonusPoints
-//      addGreenTowerDelta.textContent = (allianceGreenCubes*(greenMultiplier+1)) - (allianceGreenCubes*greenMultiplier)
-//    }else{
-//      addGreenTowerRed.textContent = '-'
-//      addGreenTowerBlue.textContent = '-'
-//      addGreenTowerDelta.textContent ='-'
-//    }
-//    outcomeCalulator(allianceScore, opponentScore, addGreenTowerDelta, addGreenTowerOutcome)
-//
-//    if(towerCubes < 7 && purpleCubesInPlay > 0){
-//      addPurpleTowerRed.textContent =   (redOrangeCubes*(orangeMultiplier))+(redGreenCubes*greenMultiplier)+(redPurpleCubes*(purpleMultiplier+1)) + redBonusPoints
-//      addPurpleTowerBlue.textContent =  (blueOrangeCubes*(orangeMultiplier))+(blueGreenCubes*greenMultiplier)+(bluePurpleCubes*(purpleMultiplier+1)) + blueBonusPoints
-//      addPurpleTowerDelta.textContent = (alliancePurpleCubes*(purpleMultiplier+1)) - (alliancePurpleCubes*purpleMultiplier)
-//    }else{
-//      addPurpleTowerRed.textContent =  '-'
-//      addPurpleTowerBlue.textContent =  '-'
-//      addPurpleTowerDelta.textContent = '-'
-//    }
-//    outcomeCalulator(allianceScore, opponentScore, addPurpleTowerDelta, addPurpleTowerOutcome)
-//
-//
-//
-   // if(towerCubes > 0 && orangeMultiplier > 1){
-   //   removeOrangeTowerRed.textContent = ((redOrangeCubes)*(orangeMultiplier-1))+((redGreenCubes)*(greenMultiplier))+((redPurpleCubes)*(purpleMultiplier)) + redBonusPoints
-   //   removeOrangeTowerBlue.textContent = ((blueOrangeCubes)*(orangeMultiplier - 1))+((blueGreenCubes)*(greenMultiplier))+((bluePurpleCubes)*(purpleMultiplier)) + blueBonusPoints
-   //   removeOrangeTowerDelta.textContent = (allianceOrangeCubes*(orangeMultiplier-1)) - (allianceOrangeCubes*orangeMultiplier)
-   // }else{
-   //   removeOrangeTowerRed.textContent = '-'
-   //   removeOrangeTowerBlue.textContent = '-'
-   //   removeOrangeTowerDelta.textContent = '-'
-   // }
-   // outcomeCalulator(allianceScore, opponentScore, removeOrangeTowerDelta, removeOrangeTowerOutcome)
-   //
-   // if(towerCubes > 0 && greenMultiplier > 1){
-   //   removeGreenTowerRed.textContent = ((redOrangeCubes)*(orangeMultiplier))+((redGreenCubes)*(greenMultiplier-1))+((redPurpleCubes)*(purpleMultiplier)) + redBonusPoints
-   //   removeGreenTowerBlue.textContent = ((blueOrangeCubes)*(orangeMultiplier))+((blueGreenCubes)*(greenMultiplier-1))+((bluePurpleCubes)*(purpleMultiplier)) + blueBonusPoints
-   //   removeGreenTowerDelta.textContent = (allianceGreenCubes*(greenMultiplier-1)) - (allianceGreenCubes*greenMultiplier)
-   // }else{
-   //   removeGreenTowerRed.textContent = '-'
-   //   removeGreenTowerBlue.textContent = '-'
-   //   removeGreenTowerDelta.textContent = '-'
-   // }
-   // outcomeCalulator(allianceScore, opponentScore, removeGreenTowerDelta, removeGreenTowerOutcome)
-   //
-   // if(towerCubes > 0 && purpleMultiplier > 1){
-   //   removePurpleTowerRed.textContent = ((redOrangeCubes)*(orangeMultiplier))+((redGreenCubes)*(greenMultiplier))+((redPurpleCubes)*(purpleMultiplier-1)) + redBonusPoints
-   //   removePurpleTowerBlue.textContent =((blueOrangeCubes)*(orangeMultiplier))+((blueGreenCubes)*(greenMultiplier))+((bluePurpleCubes)*(purpleMultiplier-1)) + blueBonusPoints
-   //   removePurpleTowerDelta.textContent = (alliancePurpleCubes*(purpleMultiplier-1)) - (alliancePurpleCubes*purpleMultiplier)
-   // }else{
-   //   removePurpleTowerRed.textContent = '-'
-   //   removePurpleTowerBlue.textContent = '-'
-   //   removePurpleTowerDelta.textContent = '-'
-   // }
-   // outcomeCalulator(allianceScore, opponentScore, removePurpleTowerDelta, removePurpleTowerOutcome)
-//
-//
-//    //stacks
-//    if(orangeCubesInPlay > 0){
-//      stackOrangeRed.textContent =   ((redOrangeCubes+1)*(orangeMultiplier))+((redGreenCubes)*(greenMultiplier))+((redPurpleCubes)*(purpleMultiplier)) + redBonusPoints
-//      stackOrangeBlue.textContent =  ((blueOrangeCubes+1)*(orangeMultiplier))+((blueGreenCubes)*(greenMultiplier))+((bluePurpleCubes)*(purpleMultiplier)) + blueBonusPoints
-//      stackOrangeDelta.textContent = ((allianceOrangeCubes+1)*orangeMultiplier)-(allianceOrangeCubes*orangeMultiplier)
-//
-//    }else {
-//      stackOrangeRed.textContent = '-'
-//      stackOrangeBlue.textContent =  '-'
-//      stackOrangeDelta.textContent = '-'
-//    }
-//    outcomeCalulator(allianceScore, opponentScore, stackOrangeDelta, stackOrangeOutcome)
-//
-//    if(greenCubesInPlay > 0){
-//      stackGreenRed.textContent =   ((redOrangeCubes)*(orangeMultiplier))+((redGreenCubes+1)*(greenMultiplier))+((redPurpleCubes)*(purpleMultiplier)) + redBonusPoints
-//      stackGreenBlue.textContent =  ((blueOrangeCubes)*(orangeMultiplier))+((blueGreenCubes+1)*(greenMultiplier))+((bluePurpleCubes)*(purpleMultiplier)) + blueBonusPoints
-//      stackGreenDelta.textContent = ((allianceGreenCubes+1)*greenMultiplier)-(allianceGreenCubes*greenMultiplier)
-//
-//    }else{
-//      stackGreenRed.textContent =  '-'
-//      stackGreenBlue.textContent = '-'
-//      stackGreenDelta.textContent ='-'
-//    }
-//    outcomeCalulator(allianceScore, opponentScore, stackGreenDelta, stackGreenOutcome)
-//
-//    if(purpleCubesInPlay > 0){
-//      stackPurpleRed.textContent =   ((redOrangeCubes)*(orangeMultiplier))+((redGreenCubes)*(greenMultiplier))+((redPurpleCubes+1)*(purpleMultiplier)) + redBonusPoints
-//      stackPurpleBlue.textContent =  ((blueOrangeCubes)*(orangeMultiplier))+((blueGreenCubes)*(greenMultiplier))+((bluePurpleCubes+1)*(purpleMultiplier)) + blueBonusPoints
-//      stackPurpleDelta.textContent = ((alliancePurpleCubes+1)*purpleMultiplier)-(alliancePurpleCubes*purpleMultiplier)
-//
-//    }else{
-//      stackPurpleRed.textContent =   '-'
-//      stackPurpleBlue.textContent =  '-'
-//      stackPurpleDelta.textContent = '-'
-//    }
-//    outcomeCalulator(allianceScore, opponentScore, stackPurpleDelta, stackPurpleOutcome)
-//
-// }
